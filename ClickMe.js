@@ -1,58 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const links = document.querySelectorAll('nav a');
-    links.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        // Remove active class from all links
-        links.forEach(link => link.classList.remove('bg-gradient-to-r', 'from-emerald-500', 'to-emerald-500'));
 
-        // Add active class to the clicked link
-        link.classList.add('bg-gradient-to-r', 'from-emerald-500', 'to-emerald-500');
 
-        // Change body background
-        const bgClass = link.getAttribute('data-bg');
-        document.body.className = bgClass + ' min-h-screen';
-      });
-    });
-  });
-  document.addEventListener('DOMContentLoaded', () => {
-    const menuButton = document.getElementById('menu-button');
-    const dropdownMenu = document.getElementById('dropdown-menu');
-    const links = document.querySelectorAll('nav a');
-
-    menuButton.addEventListener('click', () => {
-      dropdownMenu.classList.toggle('hidden');
-    });
-
-    links.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-
-        // Remove active class from all links
-        links.forEach(link => link.classList.remove('bg-gradient-to-r', 'from-emerald-500', 'to-emerald-500'));
-
-        // Add active class to the clicked link
-        link.classList.add('bg-gradient-to-r', 'from-emerald-500', 'to-emerald-500');
-
-        // Change body background
-        const bgClass = link.getAttribute('data-bg');
-        document.body.className = bgClass + ' min-h-screen';
-
-        // Hide menu on small screens after a link is clicked
-        if (window.innerWidth < 1024) {
-          dropdownMenu.classList.add('hidden');
-        }
-      });
-    });
-
-    // Adjust menu visibility on resize
-    window.addEventListener('resize', () => {
-      if (window.innerWidth >= 1024) {
-        dropdownMenu.classList.add('hidden');
-      }
-    });
-  });
   const carouselElement = document.getElementById('carousel-example');
 
 const items = [
@@ -134,4 +81,74 @@ document.getElementById('image2').classList.remove('hidden');
 document.getElementById('image2').addEventListener('click', function() {
 this.classList.add('hidden');
 document.getElementById('image1').classList.remove('hidden');
+});
+function initializeCarousel(carouselId, interval = 3000) {
+  const carousel = document.getElementById(carouselId);
+  const items = carousel.querySelectorAll('[data-carousel-item]');
+  const indicators = carousel.querySelectorAll('[data-carousel-slide-to]');
+  const prevButton = carousel.querySelector('[data-carousel-prev]');
+  const nextButton = carousel.querySelector('[data-carousel-next]');
+  
+  let currentIndex = 0;
+  let autoSlideInterval;
+
+  function showSlide(index) {
+    items.forEach((item, i) => {
+      item.classList.toggle('hidden', i !== index);
+      item.classList.toggle('opacity-0', i !== index);
+      item.classList.toggle('opacity-100', i === index);
+    });
+    indicators.forEach((indicator, i) => {
+      indicator.classList.toggle('bg-white', i === index);
+      indicator.classList.toggle('bg-gray-500', i !== index);
+    });
+  }
+
+  function showNextSlide() {
+    currentIndex = (currentIndex + 1) % items.length;
+    showSlide(currentIndex);
+  }
+
+  function showPrevSlide() {
+    currentIndex = (currentIndex - 1 + items.length) % items.length;
+    showSlide(currentIndex);
+  }
+
+  function startAutoSlide() {
+    autoSlideInterval = setInterval(showNextSlide, interval);
+  }
+
+  function stopAutoSlide() {
+    clearInterval(autoSlideInterval);
+  }
+
+  indicators.forEach((indicator, index) => {
+    indicator.addEventListener('click', () => {
+      currentIndex = index;
+      showSlide(currentIndex);
+      stopAutoSlide();
+      startAutoSlide();
+    });
+  });
+
+  prevButton.addEventListener('click', () => {
+    showPrevSlide();
+    stopAutoSlide();
+    startAutoSlide();
+  });
+
+  nextButton.addEventListener('click', () => {
+    showNextSlide();
+    stopAutoSlide();
+    startAutoSlide();
+  });
+
+  // Initial display
+  showSlide(currentIndex);
+  startAutoSlide();
+}
+
+// Initialize the carousel when the document is ready
+document.addEventListener('DOMContentLoaded', () => {
+  initializeCarousel('carousel-custom', 3000); // Adjust the interval as needed
 });
